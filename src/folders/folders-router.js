@@ -1,4 +1,4 @@
-const path = require('path');
+/* const path = require('path');
 const express = require('express');
 const xss = require('xss');
 const FoldersJson = express.json();
@@ -101,4 +101,4 @@ FoldersRouter
       .catch(next)
   })
 
-module.exports = FoldersRouter;
+module.exports = FoldersRouter;*/

@@ -38,8 +38,8 @@ RecipesRouter
       }
     }
     
-    NotesService.insertNotes(req.app.get('db'), newRecipe)
-      .then(note => {
+    RecipesService.insertRecipes(req.app.get('db'), newRecipe)
+      .then(Recipe => {
         res
         .status(201)
         .location(path.posix.join(req.originalUrl, `/${recipe.id}`))
@@ -73,7 +73,7 @@ RecipesRouter
   })
   .delete((req, res, next) => {
     const { id } = req.params  // was note_id
-    RecipesService.deleteNotes(
+    RecipesService.deleteRecipes(
       req.app.get('db'),
       id
     )
@@ -83,26 +83,5 @@ RecipesRouter
       })
       .catch(next)
   })
-  .patch(RecipesJson, (req, res, next) => {
-    const { note_title, content } = req.body;
-    const noteToUpdate = { note_title, content } // will check on Patch - not sure if it can be implemented this way
-    
-    const numberOfValues = Object.values(noteToUpdate).filter(Boolean).length
-    if (numberOfValues === 0) {
-      return res.status(400).json({
-        error: { message: `Request body must contain either 'note_title' or 'content'`}
-      })
-    }
 
-    NotesService.updateNotes(
-      req.app.get('db'),
-      req.params.note_id,
-      noteToUpdate
-    )
-      .then(() => {
-        res.status(204).end()
-      })
-      .catch(next)
-  })
-
-module.exports = NotesRouter;
+module.exports = RecipesRouter;

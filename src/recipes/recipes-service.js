@@ -19,7 +19,7 @@ const RecipeService = {
     .where('id', id)
     .first()
   },
-  deleteNotes(knex, id) {
+  deleteRecipes(knex, id) {
     return knex('recipes')
       .where({ id })
       .delete()
@@ -31,4 +31,4 @@ const RecipeService = {
   },
  }
  
- module.exports = NotesService;
+ module.exports = RecipeService;
