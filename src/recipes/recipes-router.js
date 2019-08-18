@@ -9,9 +9,11 @@ const RecipesService = require('./recipes-service');
 const serializeRecipe =  recipe => ({
   id: recipe.id,
   recipe_title: xss(recipe.recipe_title),
+  picture: recipe.picture,
   date_modified: recipe.date_modified,
   region: recipe.region,
   instructions: xss(recipe.content),
+  video: recipe.video,
   ingredients: recipe.ingredients
 })
 
@@ -26,8 +28,8 @@ RecipesRouter
       .catch(next)
   })
   .post(RecipesJson, (req, res, next) => {
-    const { recipe_title, instructions, ingredients, id, region } = req.body;
-    const newRecipe = { recipe_title, instructions, ingredients, id, region  };
+    const { recipe_title, picture, instructions, video, ingredients, id, region } = req.body;
+    const newRecipe = { recipe_title, instructions, ingredients, id, region, picture, video };
 
     for (const [key, value] of Object.entries(newRecipe)) {
       if (value == null) {
@@ -39,7 +41,7 @@ RecipesRouter
     }
     
     RecipesService.insertRecipes(req.app.get('db'), newRecipe)
-      .then(Recipe => {
+      .then(recipe => {
         res
         .status(201)
         .location(path.posix.join(req.originalUrl, `/${recipe.id}`))

@@ -3,7 +3,7 @@ const RecipeService = {
   getAllRecipes(knex) {
     return knex.select('*').from('recipes')
   },
-  insertRecipe(knex, newRecipe) {
+  insertRecipes(knex, newRecipe) {
     return knex
       .insert(newRecipe)
       .into('recipes')

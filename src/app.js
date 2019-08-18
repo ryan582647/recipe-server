@@ -5,7 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config');
 const recipesRouter = require('./recipes/recipes-router');
-//const foldersRouter = require('./folders/folders-router');
+const authRouter = require('./auth/auth-router');
 
 const app = express();
 
@@ -22,6 +22,9 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/recipes', recipesRouter);
+app.use('/api/auth', authRouter);
+
+
 //app.use('/api/folders', foldersRouter);
 
 app.use(function errorHandler(error, req, res, next) {
