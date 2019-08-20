@@ -6,6 +6,7 @@ const helmet = require('helmet')
 const { NODE_ENV } = require('./config');
 const recipesRouter = require('./recipes/recipes-router');
 const authRouter = require('./auth/auth-router');
+const userRouter = require('./users/users-router')
 
 const app = express();
 
@@ -17,12 +18,9 @@ app.use(morgan(morganOption))
 app.use(cors())
 app.use(helmet())
 
-app.get('/', (req, res) => {
-    res.send('Hello, world!')
-})
-
 app.use('/api/recipes', recipesRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
 
 
 //app.use('/api/folders', foldersRouter);

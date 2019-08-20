@@ -5,6 +5,8 @@ const RecipesJson = express.json();
 const RecipesRouter = express.Router();
 // const logger = require('../logger');
 const RecipesService = require('./recipes-service');
+const UserService = require('../users/users-service');
+const AuthService = require('../auth/auth-service')
 
 const serializeRecipe =  recipe => ({
   id: recipe.id,
@@ -31,6 +33,7 @@ RecipesRouter
     const { recipe_title, picture, instructions, video, ingredients, id, region } = req.body;
     const newRecipe = { recipe_title, instructions, ingredients, id, region, picture, video };
 
+
     for (const [key, value] of Object.entries(newRecipe)) {
       if (value == null) {
         // logger.error(`Title and Content are required.`)
@@ -38,18 +41,39 @@ RecipesRouter
           error: { message: `Missing '${key}' in request body` }
         });
       }
-    }
+    } 
     
-    RecipesService.insertRecipes(req.app.get('db'), newRecipe)
-      .then(recipe => {
-        res
-        .status(201)
-        .location(path.posix.join(req.originalUrl, `/${recipe.id}`))
-        .json(serializeRecipe(recipe))
-      })
-      .catch(next)
-  })
+    const bearerToken = AuthService.extractToken(req)
+    const tokenData = AuthService.parseJWTToken(bearerToken)
+    console.log(tokenData)
+    UserService.hasUserWithUserName(tokenData.sub)
+    .then(user =>{
+      if(!user) {
+        return res.status(400).json({
+          error: { message : "User does not exist."}
+        })
+      }
+      else {
+        console.log(user)
+        if (user.id !== tokenData.user_id){
+          return res.status(400).json({
+            error: { message : "User does not exist."}
+          })
+        }
+        const newRecipe = { user_id: tokenData.user_id, recipe_title, instructions, ingredients, id, region, picture, video };
 
+        RecipesService.insertRecipes(req.app.get('db'), newRecipe)
+        .then(recipe => {
+          res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${recipe.id}`))
+          .json(serializeRecipe(recipe))
+        })
+        .catch(next)
+    }})
+    })
+
+   
 RecipesRouter
   .route('/:id')
   .all((req, res, next) => {
