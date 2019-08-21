@@ -39,6 +39,7 @@ const AuthService = {
 
     parseJWTToken(token) {
             return jwtdecode(token);
+
         }
 
 }

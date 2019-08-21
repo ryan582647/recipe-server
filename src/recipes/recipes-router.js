@@ -42,11 +42,10 @@ RecipesRouter
         });
       }
     } 
-    
     const bearerToken = AuthService.extractToken(req)
     const tokenData = AuthService.parseJWTToken(bearerToken)
-    console.log(tokenData)
-    UserService.hasUserWithUserName(tokenData.sub)
+
+    UserService.getUserWithUserName(req.app.get('db'), tokenData.sub)
     .then(user =>{
       if(!user) {
         return res.status(400).json({
@@ -55,9 +54,10 @@ RecipesRouter
       }
       else {
         console.log(user)
+        console.log(tokenData.user_id, typeof(tokenData.user_id))
         if (user.id !== tokenData.user_id){
           return res.status(400).json({
-            error: { message : "User does not exist."}
+            error: { message : "User does not exist by id."}
           })
         }
         const newRecipe = { user_id: tokenData.user_id, recipe_title, instructions, ingredients, id, region, picture, video };
@@ -77,6 +77,25 @@ RecipesRouter
 RecipesRouter
   .route('/:id')
   .all((req, res, next) => {
+    const bearerToken = AuthService.extractToken(req)
+    const tokenData = AuthService.parseJWTToken(bearerToken)
+
+    UserService.getUserWithUserName(req.app.get('db'), tokenData.sub)
+    .then(user =>{
+      if(!user) {
+        return res.status(400).json({
+          error: { message : "User does not exist."}
+        })
+      }
+      else {
+        console.log(user)
+        console.log(tokenData.user_id, typeof(tokenData.user_id))
+        if (user.id !== tokenData.user_id){
+          return res.status(400).json({
+            error: { message : "User does not exist by id."}
+          })
+        }
+      }})
     const { id } = req.params
     RecipesService.getById(
       req.app.get('db'),
