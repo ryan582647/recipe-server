@@ -23,12 +23,40 @@ RecipesRouter
   .route('/')
   .get((req, res, next) => {
     const knexInstance = req.app.get('db');
+    const bearerToken = AuthService.extractToken(req)
+    if (bearerToken === null ){
+      return res.status(400).json({
+        error: {message: "Authentication token not received"}
+      })
+    }
+    const tokenData = AuthService.parseJWTToken(bearerToken)
+
+    
+
+    UserService.getUserWithUserName(req.app.get('db'), tokenData.sub)
+    .then(user =>{
+      if(!user) {
+        return res.status(400).json({
+          error: { message : "User does not exist."}
+        })
+      }
+      else {
+        console.log(user)
+        console.log(tokenData.user_id, typeof(tokenData.user_id))
+        if (user.id !== tokenData.user_id){
+          return res.status(400).json({
+            error: { message : "User does not exist by id."}
+          })
+        }
     RecipesService.getAllRecipes(knexInstance)
       .then(recipes => {
         res.json(recipes);
       })
       .catch(next)
-  })
+  }
+})
+    })
+
   .post(RecipesJson, (req, res, next) => {
     const { recipe_title, picture, instructions, video, ingredients, id, region } = req.body;
     const newRecipe = { recipe_title, instructions, ingredients, id, region, picture, video };
