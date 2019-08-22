@@ -1,7 +1,10 @@
 
 const RecipeService = {
-  getAllRecipes(knex) {
-    return knex.select('*').from('recipes')
+  getAllRecipes(knex, currentId) {
+    return knex
+    .select('*')
+    .from('recipes')
+    .where('user_id', currentId)
   },
   insertRecipes(knex, newRecipe) {
     return knex
@@ -19,9 +22,9 @@ const RecipeService = {
     .where('id', id)
     .first()
   },
-  deleteRecipes(knex, id) {
+  deleteRecipes(knex, id, user_id) {
     return knex('recipes')
-      .where({ id })
+      .where({ id, user_id })
       .delete()
   },
   updateRecipes(knex, id, newRecipeFields) {
