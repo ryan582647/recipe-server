@@ -48,7 +48,7 @@ RecipesRouter
             error: { message : "User does not exist by id."}
           })
         }
-    RecipesService.getAllRecipes(knexInstance)
+    RecipesService.getAllRecipes(knexInstance, tokenData.user_id, user.id)
       .then(recipes => {
         res.json(recipes);
       })
@@ -145,10 +145,13 @@ RecipesRouter
     res.json(serializeRecipe(res.recipe))
   })
   .delete((req, res, next) => {
+    const bearerToken = AuthService.extractToken(req)
+    const tokenData = AuthService.parseJWTToken(bearerToken)
     const { id } = req.params  // was note_id
     RecipesService.deleteRecipes(
       req.app.get('db'),
-      id
+      id,
+      tokenData.user_id
     )
       .then(() => {
         // logger.info(`Note with id ${note_id} deleted.`)
