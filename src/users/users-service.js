@@ -22,9 +22,12 @@ const UsersService = {
       .returning('*')
       .then(([user]) => user)
   },
-  validatePassword(password) {
+  validatePassword(password, confirmPassword) {
     if (password.length < 8) {
       return 'Password be longer than 8 characters'
+    }
+    if (password !== confirmPassword){
+      return 'Your passwords do not match. Please try again.'
     }
     if (password.length > 72) {
       return 'Password be less than 72 characters'

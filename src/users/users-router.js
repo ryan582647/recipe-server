@@ -8,7 +8,7 @@ const jsonBodyParser = express.json()
 usersRouter
   .post('/', jsonBodyParser, (req, res, next) => {
     console.log("We're ALIVE");
-    const {password, username} = req.body
+    const {password, username, confirmPassword } = req.body
     console.log(username, password)
 
     for (const field of ['username', 'password'])
@@ -18,11 +18,12 @@ usersRouter
         })
 
     // TODO: check user_name doesn't start with spaces
+    console.log(password, confirmPassword)
+    const passwordError = UsersService.validatePassword(password, confirmPassword)
 
-    const passwordError = UsersService.validatePassword(password)
-
-    if (passwordError)
+    if (passwordError) {
       return res.status(400).json({ error: passwordError })
+    }
 
     UsersService.hasUserWithUserName(
       req.app.get('db'),
