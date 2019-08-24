@@ -2,8 +2,7 @@
 const { expect } = require('chai');
 const knex = require('knex');
 const app = require('../src/app');
-const { makeNotesArray } = require('../test/notes.fixtures');
-const { makeFoldersArray } = require('../test/folders.fixtures');
+const { makeNotesArray } = require('../test/recipe.fixtures');
 
 describe('Notes Endpoints', function () {
   let db
@@ -18,40 +17,34 @@ describe('Notes Endpoints', function () {
 
   after('disconnect from db', () => db.destroy());
 
-  before('clean the table', () => db('notes').del());
-  before('clean the table', () => db('folders').del());
+  before('clean the table', () => db('recipes').del());
 
-  afterEach('cleanup', () => db('notes').del());
-  afterEach('cleanup', () => db('folders').del());
+  afterEach('cleanup', () => db('recipes').del());
 
-  describe('GET /api/notes', () => {
+  describe('GET /api/recipes', () => {
     context('Given no notes', () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
-          .get('/api/notes')
+          .get('/api/recipes')
           .expect(200, [])
       })
     });
 
-    context('Given there are notes in the database', () => {
-      const testFolders = makeFoldersArray();
-      const testNotes = makeNotesArray();
+    context('Given there are recipes in the database', () => {
+      const testRecipes = makeRecipesArray();
 
       beforeEach('insert folders', () => {
         return db
-          .into('folders')
-          .insert(testFolders)
-          .then(() => {
-            return db
-            .into('notes')
-            .insert(testNotes)
-          })
+          .into('recipes')
+          .insert(testRecipes)
       });
+
+      /*Unfinished integration testing*/
 
       it('responds with 200 and all of the notes', () => {
         return supertest(app)
           .get('/api/notes')
-          .expect(200, testNotes)
+          .expect(200, testRecipes)
       })
     })
   });
