@@ -154,7 +154,6 @@ RecipesRouter
       tokenData.user_id
     )
       .then(() => {
-        // logger.info(`Note with id ${note_id} deleted.`)
         res.status(204).end()
       })
       .catch(next)
